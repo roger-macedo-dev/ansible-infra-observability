@@ -1,0 +1,13 @@
+---                                                   # início do documento YAML (sempre)
+- name: Subir container Nginx no node1                # "- " = uma PLAY (item de lista). name = rótulo legível
+  hosts: nodes                                        # em quais máquinas roda (grupo do inventory.ini)
+  become: true                                        # elevar privilégio = rodar como root (sudo)
+  tasks:                                              # início da lista de tarefas a executar
+    - name: Garantir que o container está no ar       # "- " = uma TASK. name = descrição na saída
+      community.docker.docker_container:              # o MÓDULO: coleção.namespace.módulo
+        name: meu-nginx                               # nome do container (aparece em: docker ps)
+        image: nginx:latest                           # imagem:tag  (repositório no Docker Hub : versão)
+        state: started                                # ESTADO desejado: started/stopped/absent/present
+        restart_policy: always                        # Docker reinicia o container sozinho se cair/rebootar
+        ports:                                        # lista de mapeamentos de porta
+          - "8080:80"                                 # "host:container" -> 8080 no node1, 80 dentro do container

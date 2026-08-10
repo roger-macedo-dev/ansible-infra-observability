@@ -1,0 +1,11 @@
+# Ansible
+*.retry
+
+# Chaves e segredos - NUNCA versionar
+*.pem
+*.key
+vault-pass.txt
+
+# Temporários
+*.log
+*~
