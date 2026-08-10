@@ -1,0 +1,11 @@
+global:
+  resolve_timeout: 5m
+
+route:
+  receiver: 'default'          # para onde vão os alertas por padrão
+  group_wait: 10s              # espera antes de enviar o 1º alerta do grupo
+  group_interval: 10s
+  repeat_interval: 1h          # de quanto em quanto repete se ainda ativo
+
+receivers:
+  - name: 'default'            # receiver "vazio" por ora (sem notificação externa)

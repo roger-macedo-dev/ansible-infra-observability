@@ -1,0 +1,22 @@
+---
+- name: Adicionar repositório do Docker
+  ansible.builtin.yum_repository:
+    name: docker-ce
+    description: Docker CE Repo
+    baseurl: https://download.docker.com/linux/centos/9/x86_64/stable/
+    gpgcheck: true
+    gpgkey: https://download.docker.com/linux/centos/gpg
+
+- name: Instalar Docker Engine
+  ansible.builtin.dnf:
+    name:
+      - docker-ce
+      - docker-ce-cli
+      - containerd.io
+    state: present
+
+- name: Habilitar e iniciar o serviço Docker
+  ansible.builtin.systemd:
+    name: docker
+    enabled: true
+    state: started

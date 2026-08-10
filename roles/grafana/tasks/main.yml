@@ -1,0 +1,15 @@
+---
+- name: Criar volume de dados do Grafana
+  community.docker.docker_volume:
+    name: grafana-data
+
+- name: Subir container Grafana
+  community.docker.docker_container:
+    name: grafana
+    image: grafana/grafana:latest
+    state: started
+    restart_policy: always
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana-data:/var/lib/grafana

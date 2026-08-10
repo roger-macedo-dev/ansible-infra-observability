@@ -1,0 +1,8 @@
+---
+- name: Liberar portas no firewalld
+  ansible.posix.firewalld:
+    port: "{{ item }}"
+    permanent: true
+    immediate: true
+    state: enabled
+  loop: "{{ firewall_ports }}"

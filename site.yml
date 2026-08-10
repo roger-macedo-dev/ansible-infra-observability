@@ -1,0 +1,13 @@
+---
+- name: Configurar node1 - stack completa
+  hosts: nodes
+  become: true
+  roles:
+    - docker
+    - firewall
+    - node_exporter
+    - prometheus
+    - loki
+    - promtail
+    - grafana
+    - alertmanager

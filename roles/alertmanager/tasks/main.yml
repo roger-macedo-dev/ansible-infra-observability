@@ -1,0 +1,23 @@
+---
+- name: Criar diretório de config do Alertmanager
+  ansible.builtin.file:
+    path: /opt/alertmanager
+    state: directory
+    mode: '0755'
+
+- name: Copiar config do Alertmanager
+  ansible.builtin.copy:
+    src: alertmanager.yml
+    dest: /opt/alertmanager/alertmanager.yml
+    mode: '0644'
+
+- name: Subir container Alertmanager
+  community.docker.docker_container:
+    name: alertmanager
+    image: prom/alertmanager:latest
+    state: started
+    restart_policy: always
+    ports:
+      - "9093:9093"
+    volumes:
+      - /opt/alertmanager/alertmanager.yml:/etc/alertmanager/alertmanager.yml:ro
