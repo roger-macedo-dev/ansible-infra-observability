@@ -1,0 +1,11 @@
+global:
+  scrape_interval: 15s        # com que frequência coletar as métricas
+
+scrape_configs:
+  - job_name: 'node_exporter'          # nome do "trabalho" de coleta
+    static_configs:
+      - targets: ['192.168.56.11:9100']   # de onde raspar (o node_exporter)
+
+  - job_name: 'prometheus'             # o Prometheus também se monitora
+    static_configs:
+      - targets: ['localhost:9090']

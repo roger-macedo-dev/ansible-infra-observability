@@ -1,0 +1,24 @@
+---
+- name: Instalar node_exporter (métricas do sistema)
+  hosts: nodes
+  become: true
+
+
+
+  tasks:
+    - name: Subir container node_exporter
+      community.docker.docker_container:
+        name: node-exporter
+        image: prom/node-exporter:latest
+        state: started
+        restart_policy: always
+        network_mode: host
+        pid_mode: host
+        volumes:
+          - /proc:/host/proc:ro
+          - /sys:/host/sys:ro
+          - /:/rootfs:ro
+        command:
+          - '--path.procfs=/host/proc'
+          - '--path.sysfs=/host/sys'
+          - '--path.rootfs=/rootfs'

@@ -1,0 +1,17 @@
+---
+- name: Liberar portas do lab de observabilidade
+  hosts: nodes
+  become: true
+
+  tasks:
+    - name: Liberar portas no firewalld
+      ansible.posix.firewalld:
+        port: "{{ item }}"
+        permanent: true
+        immediate: true
+        state: enabled
+      loop:
+        - "9100/tcp"    # node_exporter
+        - "9090/tcp"    # prometheus
+        - "3000/tcp"    # grafana
+        - "8080/tcp"    # nginx (garantir)
