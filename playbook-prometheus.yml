@@ -16,13 +16,21 @@
         dest: /opt/prometheus/prometheus.yml
         mode: '0644'
 
+    - name: Copiar arquivo de regras de alerta
+      ansible.builtin.copy:
+        src: files/alert-rules.yml
+        dest: /opt/prometheus/alert-rules.yml
+        mode: '0644'
+
     - name: Subir container Prometheus
       community.docker.docker_container:
         name: prometheus
         image: prom/prometheus:latest
         state: started
         restart_policy: always
+        recreate: true
         ports:
           - "9091:9090"
         volumes:
           - /opt/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+          - /opt/prometheus/alert-rules.yml:/etc/prometheus/alert-rules.yml:ro

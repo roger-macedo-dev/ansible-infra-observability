@@ -16,3 +16,4 @@
         - "3000/tcp"    # grafana
         - "8080/tcp"    # nginx (garantir)
         - "3100/tcp"    # loki
+        - "9093/tcp"    # alertmanager

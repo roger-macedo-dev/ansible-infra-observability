@@ -1,0 +1,20 @@
+groups:
+  - name: alertas-basicos
+    rules:
+      - alert: NodeExporterDown
+        expr: up{job="node_exporter"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "node_exporter caiu"
+          description: "O node_exporter em {{ $labels.instance }} está fora há mais de 1 minuto."
+
+      - alert: MemoriaAlta
+        expr: (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100 > 80
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Memória acima de 80%"
+          description: "Uso de memória em {{ $labels.instance }} está em {{ $value | humanize }}%."
