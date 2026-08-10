@@ -1,0 +1,19 @@
+server:
+  http_listen_port: 9080          # porta interna do Promtail
+  grpc_listen_port: 0
+
+positions:
+  filename: /tmp/positions.yaml   # marca até onde já leu cada arquivo (não reenvia tudo)
+
+clients:
+  - url: http://192.168.56.11:3100/loki/api/v1/push   # para onde enviar (o Loki)
+
+scrape_configs:
+  - job_name: system              # nome do job
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+          job: varlogs            # rótulo para filtrar depois no Grafana
+          host: node1
+          __path__: /var/log/{messages,secure,cron,maillog,boot.log}

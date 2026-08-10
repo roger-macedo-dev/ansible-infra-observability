@@ -1,0 +1,20 @@
+---
+- name: Subir Loki no node1
+  hosts: nodes
+  become: true
+
+  tasks:
+    - name: Criar volume de dados do Loki
+      community.docker.docker_volume:
+        name: loki-data
+
+    - name: Subir container Loki
+      community.docker.docker_container:
+        name: loki
+        image: grafana/loki:latest
+        state: started
+        restart_policy: always
+        ports:
+          - "3100:3100"
+        volumes:
+          - loki-data:/loki

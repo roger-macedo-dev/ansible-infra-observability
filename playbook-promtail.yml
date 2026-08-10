@@ -1,0 +1,28 @@
+---
+- name: Subir Promtail no node1
+  hosts: nodes
+  become: true
+
+  tasks:
+    - name: Criar diretório de config do Promtail
+      ansible.builtin.file:
+        path: /opt/promtail
+        state: directory
+        mode: '0755'
+
+    - name: Copiar config do Promtail
+      ansible.builtin.copy:
+        src: files/promtail-config.yml
+        dest: /opt/promtail/promtail-config.yml
+        mode: '0644'
+
+    - name: Subir container Promtail
+      community.docker.docker_container:
+        name: promtail
+        image: grafana/promtail:latest
+        state: started
+        restart_policy: always
+        volumes:
+          - /opt/promtail/promtail-config.yml:/etc/promtail/config.yml:ro
+          - /var/log:/var/log:ro
+        command: '-config.file=/etc/promtail/config.yml'
