@@ -1,0 +1,29 @@
+---
+name: Ansible CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  validate:
+    name: Validar Ansible
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      - name: Instalar Ansible
+        run: |
+          python3 -m pip install --upgrade pip
+          pip install ansible ansible-lint
+
+      - name: Verificar sintaxe do site.yml
+        run: ansible-playbook site.yml --syntax-check -i inventory.ini
+
+      - name: Rodar ansible-lint
+        run: ansible-lint site.yml
+        continue-on-error: true
