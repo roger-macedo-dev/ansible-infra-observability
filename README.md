@@ -35,6 +35,31 @@ A imagem oficial `grafana/promtail` é compilada **sem** suporte a leitura do sy
 
 Solução implementada: build customizado do Promtail a partir do código-fonte oficial, com `CGO_ENABLED=1` e `libsystemd-dev`, compilado **no control node** (não na instância de destino, para não sobrecarregar hosts pequenos como t3.micro) e distribuído como imagem pré-buildada via Ansible.
 
+## Executando com tags
+
+Todas as roles têm tags para permitir execução isolada, sem reprocessar a stack inteira:
+
+| Tag | Cobre |
+|---|---|
+| `infra` | docker, firewall, swap |
+| `observability` | node_exporter, prometheus, loki, promtail, grafana, alertmanager |
+| `app` | app-pedidos |
+| *(nome da role)* | Cada role também tem sua própria tag individual (ex: `promtail`, `prometheus`) |
+
+```bash
+# Rodar uma role isolada
+ansible-playbook site.yml --limit aws --tags promtail
+
+# Rodar um grupo inteiro
+ansible-playbook site.yml --limit aws --tags observability
+
+# Pular uma tag (ex: evitar rebuild pesado do Promtail)
+ansible-playbook site.yml --limit aws --skip-tags promtail
+
+# Listar todas as tags disponíveis
+ansible-playbook site.yml --list-tags
+```
+
 ## Como executar
 
 ### Pré-requisito único: buildar a imagem customizada do Promtail
