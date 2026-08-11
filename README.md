@@ -2,20 +2,6 @@
 
 Laboratório completo de automação e observabilidade, com Ansible orquestrando ambientes local (VirtualBox) e nuvem (AWS EC2), CI/CD via GitHub Actions e stack de observabilidade Prometheus + Grafana + Loki + Alertmanager.
 
-## Arquitetura
-
-┌──────────────────┐ ┌────────────────────┐
-│ Control Node │────SSH──│ node1 (local) │
-│ (Ansible) │ │ AlmaLinux 9 │
-│ │ │ VirtualBox │
-│ │ └────────────────────┘
-│ │
-│ │ ┌────────────────────┐
-│ │────SSH──│ node-aws (cloud) │
-│ │ │ Amazon Linux 2023 │
-└──────────────────┘ │ EC2 t3.micro │
-└────────────────────┘
-
 ## Stack e ferramentas
 
 - **Automação:** Ansible (roles modulares, orquestração via `site.yml`)
@@ -28,25 +14,6 @@ Laboratório completo de automação e observabilidade, com Ansible orquestrando
 - **Nuvem:** AWS (EC2, VPC, IAM, Security Groups)
 - **CI/CD:** GitHub Actions (validação automática a cada push)
 - **Versionamento:** Git + GitHub
-
-## Estrutura do projeto
-
-ansible-lab/
-├── .github/workflows/ # Pipeline CI (GitHub Actions)
-├── roles/ # 8 roles Ansible reutilizáveis
-│ ├── docker/
-│ ├── firewall/
-│ ├── node_exporter/
-│ ├── prometheus/
-│ ├── grafana/
-│ ├── loki/
-│ ├── promtail/
-│ └── alertmanager/
-├── files/ # Arquivos de configuração
-├── inventory.ini # Inventário de hosts (local + AWS)
-├── ansible.cfg # Configuração do projeto
-├── site.yml # Playbook orquestrador
-└── playbooks-antigos/ # Playbooks originais (referência histórica)
 
 ## Como executar
 
@@ -89,5 +56,4 @@ ansible all -m ping
 ## Sobre
 
 Projeto desenvolvido como transição de carreira: 15+ anos em infraestrutura enterprise (Dell EMC, Linux, VMware) para DevOps. Foco em automação, observabilidade e infraestrutura como código.
-
 
