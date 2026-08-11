@@ -1,19 +1,41 @@
 server:
-  http_listen_port: 9080          # porta interna do Promtail
+  http_listen_port: 9080
   grpc_listen_port: 0
 
 positions:
-  filename: /tmp/positions.yaml   # marca até onde já leu cada arquivo (não reenvia tudo)
+  filename: /tmp/positions.yaml
 
 clients:
-  - url: http://192.168.56.11:3100/loki/api/v1/push   # para onde enviar (o Loki)
+  - url: http://host.docker.internal:3100/loki/api/v1/push
 
 scrape_configs:
-  - job_name: system              # nome do job
+  # Logs em arquivo de texto (funciona no AlmaLinux/node1; no Amazon Linux 2023
+  # esses arquivos não existem, então esse bloco simplesmente não encontra nada
+  # ali e não gera erro — é seguro manter para os dois ambientes).
+  - job_name: system
     static_configs:
       - targets:
           - localhost
         labels:
-          job: varlogs            # rótulo para filtrar depois no Grafana
+          job: varlogs
           host: node1
           __path__: /var/log/{messages,secure,cron,maillog,boot.log}
+
+  # Logs via systemd-journal — necessário no Amazon Linux 2023 (AL2023 não
+  # mantém mais os arquivos de texto tradicionais por padrão).
+  - job_name: journal
+    journal:
+      json: false
+      max_age: 12h
+      path: /var/log/journal
+      labels:
+        job: systemd-journal
+        host: node-aws
+    relabel_configs:
+      # Traz o nome da unit systemd (ex: sshd.service, docker.service) como label
+      - source_labels: ['__journal__systemd_unit']
+        target_label: 'unit'
+      # Traz a prioridade/nível do log (0=emerg ... 7=debug)
+      - source_labels: ['__journal_priority']
+        target_label: 'priority'
+

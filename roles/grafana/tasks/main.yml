@@ -9,6 +9,8 @@
     image: grafana/grafana:latest
     state: started
     restart_policy: always
+    etc_hosts:
+      host.docker.internal: host-gateway
     ports:
       - "3000:3000"
     volumes:

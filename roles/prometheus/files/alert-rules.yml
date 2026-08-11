@@ -9,7 +9,14 @@ groups:
         annotations:
           summary: "node_exporter caiu"
           description: "O node_exporter em {{ $labels.instance }} está fora há mais de 1 minuto."
-
+      - alert: TaxaErroAlta
+        expr: rate(pedidos_total{status="erro"}[5m]) / rate(pedidos_total[5m]) > 0.1
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Taxa de erro acima de 10%"
+          description: "API pedidos com {{ $value | humanizePercentage }} de erro em {{ $labels.instance }}."
       - alert: MemoriaAlta
         expr: (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100 > 80
         for: 2m

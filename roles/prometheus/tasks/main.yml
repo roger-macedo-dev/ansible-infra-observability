@@ -4,19 +4,16 @@
     path: /opt/prometheus
     state: directory
     mode: '0755'
-
 - name: Copiar prometheus.yml para o node1
   ansible.builtin.copy:
     src: prometheus.yml
     dest: /opt/prometheus/prometheus.yml
     mode: '0644'
-
 - name: Copiar arquivo de regras de alerta
   ansible.builtin.copy:
     src: alert-rules.yml
     dest: /opt/prometheus/alert-rules.yml
     mode: '0644'
-
 - name: Subir container Prometheus
   community.docker.docker_container:
     name: prometheus
@@ -24,6 +21,8 @@
     state: started
     restart_policy: always
     recreate: true
+    etc_hosts:
+      host.docker.internal: host-gateway
     ports:
       - "9091:9090"
     volumes:

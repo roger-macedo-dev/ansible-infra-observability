@@ -11,13 +11,31 @@
     dest: /opt/promtail/promtail-config.yml
     mode: '0644'
 
+- name: Copiar imagem pré-buildada do Promtail (com suporte a journal)
+  ansible.builtin.copy:
+    src: promtail-journal.tar
+    dest: /opt/promtail/promtail-journal.tar
+    mode: '0644'
+  register: image_copy
+
+- name: Carregar a imagem no Docker do host remoto
+  ansible.builtin.command:
+    cmd: docker load -i /opt/promtail/promtail-journal.tar
+  when: image_copy.changed
+  become: true
+
 - name: Subir container Promtail
   community.docker.docker_container:
     name: promtail
-    image: grafana/promtail:latest
+    image: promtail-journal:local
     state: started
     restart_policy: always
+    user: root
+    etc_hosts:
+      host.docker.internal: host-gateway
     volumes:
       - /opt/promtail/promtail-config.yml:/etc/promtail/config.yml:ro
       - /var/log:/var/log:ro
+      - /var/log/journal:/var/log/journal:ro
+      - /etc/machine-id:/etc/machine-id:ro
     command: '-config.file=/etc/promtail/config.yml'

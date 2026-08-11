@@ -1,0 +1,37 @@
+# Build customizado do Promtail com suporte a systemd journal.
+# A imagem oficial grafana/promtail:latest é compilada com CGO_ENABLED=0,
+# o que remove o suporte a leitura do journal (depende de libsystemd via CGO).
+# Aqui compilamos a partir do código-fonte oficial, com CGO habilitado e
+# libsystemd-dev instalada, pra ativar esse suporte.
+
+FROM golang:1.25-bookworm AS builder
+
+ARG LOKI_VERSION=v3.6.8
+
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        libsystemd-dev \
+        pkg-config \
+        git \
+        ca-certificates && \
+    rm -rf /var/lib/apt/lists/*
+
+WORKDIR /src
+RUN git clone --depth 1 --branch ${LOKI_VERSION} https://github.com/grafana/loki.git .
+
+ENV CGO_ENABLED=1
+RUN go build -tags promtail_journal_enabled -o /out/promtail ./clients/cmd/promtail
+
+# ---- Imagem final, enxuta ----
+FROM debian:bookworm-slim
+
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        libsystemd0 \
+        ca-certificates \
+        tzdata && \
+    rm -rf /var/lib/apt/lists/*
+
+COPY --from=builder /out/promtail /usr/bin/promtail
+
+ENTRYPOINT ["/usr/bin/promtail"]

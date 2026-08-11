@@ -9,3 +9,7 @@ vault-pass.txt
 # Temporários
 *.log
 *~
+HowTo_Runbook_Lab_Roger.md
+Cola_Ansible_Playbook_Roger.md
+roles/promtail/files/promtail-journal.tar
+roles/promtail/files/promtail-journal.tar
