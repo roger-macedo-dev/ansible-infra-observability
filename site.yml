@@ -3,13 +3,32 @@
   hosts: all
   become: true
   roles:
-    - docker
-    - firewall
-    - node_exporter
-    - prometheus
-    - loki
-    - promtail
-    - grafana
-    - alertmanager
-    - app-pedidos
-    - swap
+    - role: docker
+      tags: [docker, infra]
+
+    - role: firewall
+      tags: [firewall, infra]
+
+    - role: node_exporter
+      tags: [node_exporter, observability]
+
+    - role: prometheus
+      tags: [prometheus, observability]
+
+    - role: loki
+      tags: [loki, observability]
+
+    - role: promtail
+      tags: [promtail, observability]
+
+    - role: grafana
+      tags: [grafana, observability]
+
+    - role: alertmanager
+      tags: [alertmanager, observability]
+
+    - role: app-pedidos
+      tags: [app-pedidos, app]
+
+    - role: swap
+      tags: [swap, infra]
