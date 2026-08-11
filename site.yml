@@ -1,6 +1,6 @@
 ---
 - name: Configurar node1 - stack completa
-  hosts: nodes
+  hosts: all
   become: true
   roles:
     - docker
