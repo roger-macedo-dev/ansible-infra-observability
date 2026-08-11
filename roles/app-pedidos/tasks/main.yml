@@ -1,0 +1,37 @@
+---
+- name: Criar diretório da aplicação no node
+  ansible.builtin.file:
+    path: /opt/app-pedidos
+    state: directory
+    mode: '0755'
+
+- name: Copiar código da aplicação
+  ansible.builtin.copy:
+    src: app.py
+    dest: /opt/app-pedidos/app.py
+    mode: '0644'
+
+- name: Copiar Dockerfile
+  ansible.builtin.copy:
+    src: Dockerfile
+    dest: /opt/app-pedidos/Dockerfile
+    mode: '0644'
+
+- name: Buildar a imagem da aplicação
+  community.docker.docker_image:
+    name: api-pedidos
+    tag: latest
+    source: build
+    build:
+      path: /opt/app-pedidos
+    force_source: true
+
+- name: Subir container da aplicação
+  community.docker.docker_container:
+    name: api-pedidos
+    image: api-pedidos:latest
+    state: started
+    restart_policy: always
+    recreate: true
+    ports:
+      - "5000:5000"

@@ -1,0 +1,60 @@
+---
+# roles/swap/tasks/main.yml
+# Cria e ativa 1GB de swap em disco, persistente após reboot (via /etc/fstab).
+# Serve como rede de segurança contra OOM em instâncias com RAM limitada (ex: t3.micro).
+
+- name: Verificar se o swapfile já existe
+  ansible.builtin.stat:
+    path: /swapfile
+  register: swap_file_check
+
+- name: Criar arquivo de swap de 1GB
+  ansible.builtin.command:
+    cmd: fallocate -l 1G /swapfile
+  when: not swap_file_check.stat.exists
+  become: true
+
+- name: Ajustar permissões do swapfile (somente root pode ler/escrever)
+  ansible.builtin.file:
+    path: /swapfile
+    mode: '0600'
+    owner: root
+    group: root
+  become: true
+
+- name: Formatar o arquivo como área de swap
+  ansible.builtin.command:
+    cmd: mkswap /swapfile
+  when: not swap_file_check.stat.exists
+  become: true
+
+- name: Verificar se o swap já está ativo
+  ansible.builtin.command:
+    cmd: grep -q /swapfile /proc/swaps
+  register: swap_active_check
+  changed_when: false
+  failed_when: false
+  become: true
+
+- name: Ativar o swap agora
+  ansible.builtin.command:
+    cmd: swapon /swapfile
+  when: swap_active_check.rc != 0
+  become: true
+
+- name: Garantir persistência no /etc/fstab (sobrevive a reboot)
+  ansible.posix.mount:
+    path: none
+    src: /swapfile
+    fstype: swap
+    opts: sw
+    state: present
+  become: true
+
+- name: Ajustar swappiness (evita usar swap cedo demais, prioriza RAM primeiro)
+  ansible.posix.sysctl:
+    name: vm.swappiness
+    value: '10'
+    state: present
+    reload: true
+  become: true

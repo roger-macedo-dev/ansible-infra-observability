@@ -11,3 +11,5 @@
     - promtail
     - grafana
     - alertmanager
+    - app-pedidos
+    - swap
