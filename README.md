@@ -1,4 +1,4 @@
-# Ansible Lab — Automação de Infraestrutura Híbrida
+# Ansible Infra Observability — Automação de Infraestrutura Híbrida
 
 Laboratório completo de automação e observabilidade, com Ansible orquestrando ambientes local (VirtualBox) e nuvem (AWS EC2), CI/CD via GitHub Actions e stack de observabilidade Prometheus + Grafana + Loki + Alertmanager — incluindo alertas de infraestrutura e de aplicação.
 
