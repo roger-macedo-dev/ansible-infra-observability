@@ -1,0 +1,9 @@
+# Hosts de nuvem usados em laboratorios anteriores. As instancias foram
+# destruidas; os enderecos ficam como exemplo de inventario multi-nuvem.
+# Usar com: ansible-playbook -i inventory-nuvem.ini.exemplo site.yml
+
+[aws]
+node-aws ansible_host=18.218.34.247 ansible_user=ec2-user ansible_ssh_private_key_file=~/.ssh/chave-aws-lab.pem
+
+[azure]
+node-azure ansible_host=40.123.241.145 ansible_user=rogeradmin ansible_ssh_private_key_file=~/.ssh/azure-lab-key-rsa

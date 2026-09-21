@@ -1,0 +1,22 @@
+---
+# Identidade padronizada do parque. UID e GID iguais em todas as máquinas
+# evitam problemas de posse em volumes e arquivos compartilhados.
+baseline_usuario: rmacedo
+baseline_uid: 1000
+baseline_gid: 1000
+baseline_grupos: [wheel, docker]
+baseline_docker_gid: 992
+
+# Chave pública autorizada para o usuário. Definir em group_vars ou -e.
+baseline_chave_publica: ""
+
+# Contas aposentadas: bloqueadas e sem shell, nunca removidas pelo role.
+# Remoção é ato deliberado, feito à mão depois de conferir.
+baseline_usuarios_aposentados: [roger]
+
+# Ajustes de laboratório. Em servidor físico, kdump deve ficar ligado.
+baseline_desligar_kdump: true
+baseline_instalar_vmtools: true
+
+# Atualizar todos os pacotes. Custa tempo; desligue em execuções rápidas.
+baseline_atualizar_pacotes: false

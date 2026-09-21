@@ -1,0 +1,10 @@
+---
+# Versoes fixadas para o ansible-core 2.14 que roda neste control node.
+# Sem fixar, o galaxy instala a ultima versao, que exige core mais novo.
+collections:
+  - name: ansible.posix
+    version: "1.5.4"
+  - name: community.general
+    version: "8.6.0"
+  - name: community.docker
+    version: "3.10.4"

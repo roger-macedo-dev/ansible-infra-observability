@@ -1,0 +1,91 @@
+---
+- name: Atualizar todos os pacotes do sistema
+  ansible.builtin.dnf:
+    name: "*"
+    state: latest
+    update_cache: true
+  when: baseline_atualizar_pacotes
+
+- name: Garantir o grupo primário do usuário padrão
+  ansible.builtin.group:
+    name: "{{ baseline_usuario }}"
+    gid: "{{ baseline_gid }}"
+    state: present
+
+- name: Padronizar o GID do grupo docker
+  ansible.builtin.group:
+    name: docker
+    gid: "{{ baseline_docker_gid }}"
+    state: present
+  notify: reiniciar docker
+
+- name: Garantir o usuário padrão
+  ansible.builtin.user:
+    name: "{{ baseline_usuario }}"
+    uid: "{{ baseline_uid }}"
+    group: "{{ baseline_usuario }}"
+    groups: "{{ baseline_grupos }}"
+    append: true
+    shell: /bin/bash
+    create_home: true
+
+- name: Autorizar a chave pública do control node
+  ansible.posix.authorized_key:
+    user: "{{ baseline_usuario }}"
+    key: "{{ baseline_chave_publica }}"
+    exclusive: true
+  when: baseline_chave_publica | length > 0
+
+- name: Bloquear contas aposentadas
+  ansible.builtin.user:
+    name: "{{ item }}"
+    password_lock: true
+    shell: /usr/sbin/nologin
+  loop: "{{ baseline_usuarios_aposentados }}"
+  failed_when: false
+
+- name: Impedir login de root por SSH
+  ansible.builtin.copy:
+    dest: /etc/ssh/sshd_config.d/10-sem-root.conf
+    content: "PermitRootLogin no\n"
+    owner: root
+    group: root
+    mode: "0600"
+    validate: /usr/sbin/sshd -t -f %s
+  notify: recarregar sshd
+
+- name: Reduzir o nível de log no console
+  ansible.posix.sysctl:
+    name: kernel.printk
+    value: "3 4 1 3"
+    sysctl_file: /etc/sysctl.d/10-console-loglevel.conf
+    state: present
+    reload: true
+
+- name: Desligar o kdump em máquina virtual
+  ansible.builtin.systemd:
+    name: kdump
+    enabled: false
+    state: stopped
+  when: baseline_desligar_kdump
+  failed_when: false
+
+- name: Mascarar o mcelog, sem sentido em máquina virtual
+  ansible.builtin.systemd:
+    name: mcelog
+    masked: true
+  failed_when: false
+
+
+- name: Instalar o agente do VMware
+  ansible.builtin.dnf:
+    name: open-vm-tools
+    state: present
+  when: baseline_instalar_vmtools and ansible_virtualization_type == "VMware"
+
+- name: Habilitar o agente do VMware
+  ansible.builtin.systemd:
+    name: vmtoolsd
+    enabled: true
+    state: started
+  when: baseline_instalar_vmtools and ansible_virtualization_type == "VMware"
