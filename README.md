@@ -126,3 +126,27 @@ Ciclo completo (`Inactive → Pending → Firing → Resolved`) testado e valida
 ## Sobre
 
 Projeto desenvolvido como transição de carreira: 15+ anos em infraestrutura enterprise (Dell EMC, Linux, VMware) para DevOps. Foco em automação, observabilidade e infraestrutura como código.
+
+## Baseline das máquinas
+
+O role `baseline` garante o estado mínimo de qualquer host antes que os demais
+roles rodem: usuário administrativo com UID e GID fixos, grupo `docker` com GID
+padronizado, chave pública autorizada, contas antigas bloqueadas, login de root
+por SSH desabilitado e ajustes próprios de máquina virtual.
+
+UID e GID fixos não são detalhe: quando divergem entre máquinas, volumes e
+arquivos compartilhados passam a responder ao usuário errado.
+
+Os valores ficam em `roles/baseline/defaults/main.yml` e a chave autorizada em
+`group_vars/all.yml`, aplicados com `ansible-playbook site.yml --tags baseline`.
+
+## Dependências
+
+As coleções estão fixadas em `requirements.yml`, com versões compatíveis com o
+`ansible-core` deste control node. Instalação com
+`ansible-galaxy collection install -r requirements.yml`.
+
+## Inventário
+
+`inventory.ini` contém apenas o `node1`. Os hosts de nuvem de laboratórios
+anteriores ficam em `inventory-nuvem.ini.exemplo`, fora da execução padrão.
