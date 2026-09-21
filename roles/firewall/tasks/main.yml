@@ -1,4 +1,21 @@
 ---
+- name: Atualizar pacotes do sistema
+  ansible.builtin.dnf:
+    name: "*"
+    state: latest
+    update_cache: true
+
+- name: Instalar firewalld
+  ansible.builtin.dnf:
+    name: firewalld
+    state: present
+
+- name: Habilitar e iniciar o firewalld
+  ansible.builtin.systemd:
+    name: firewalld
+    enabled: true
+    state: started
+
 - name: Liberar portas no firewalld
   ansible.posix.firewalld:
     port: "{{ item }}"
